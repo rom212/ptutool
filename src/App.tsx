@@ -1,6 +1,6 @@
 import "./App.css";
 import NavBar from "./components/navbar/NavBar";
-import Main from "./components/main/main";
+import Main from "./components/main/Main";
 import Settings from "./components/settings/Settings";
 
 function App() {

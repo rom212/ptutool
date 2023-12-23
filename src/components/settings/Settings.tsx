@@ -1,4 +1,4 @@
-import { FC, ReactNode, useRef, useState, ChangeEvent } from "react";
+import { FC, ReactNode, useRef, useState, ChangeEvent, FormEvent } from "react";
 
 import { GPT4_32K, GPT4_8K } from "../../constants";
 
@@ -18,7 +18,7 @@ const Settings: FC<Props> = () => {
   const costOutputRef = useRef<HTMLInputElement>(null);
 
   const [currentModel, setCurrentModel] = useState<Models>(Models.gpt4_8k);
-  const [expectedTPM, setExpectedTPM] = useState<string>("48000");
+
   const [InputOutputRatio, setInputOutputRatio] = useState<string>("75");
 
   let lowRange;
@@ -35,6 +35,8 @@ const Settings: FC<Props> = () => {
     midRange = GPT4_32K.midRange;
   }
 
+  const [expectedTPM, setExpectedTPM] = useState<string>(midRange as string);
+
   const handleClickGPT48k = () => {
     setCurrentModel(Models.gpt4_8k);
     if (costInputRef.current) {
@@ -43,6 +45,7 @@ const Settings: FC<Props> = () => {
     if (costOutputRef.current) {
       costOutputRef.current.value = GPT4_8K.costOutput;
     }
+    setExpectedTPM(GPT4_8K.midRange);
   };
 
   const handleClickGPT432k = () => {
@@ -53,6 +56,7 @@ const Settings: FC<Props> = () => {
     if (costOutputRef.current) {
       costOutputRef.current.value = GPT4_32K.costOutput;
     }
+    setExpectedTPM(GPT4_32K.midRange);
   };
 
   const handleSlideTPM = (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,10 +69,15 @@ const Settings: FC<Props> = () => {
     setInputOutputRatio(e.target.value);
   };
 
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(e.target);
+  };
+
   return (
     <div className={styles.container}>
       <h2>{`Selected Model: ${currentModel}`}</h2>
-      <form>
+      <form onSubmit={handleFormSubmit}>
         <label htmlFor="costInput">Cost in $ for 1k input tokens:</label>
         <input
           type="text"
@@ -93,7 +102,6 @@ const Settings: FC<Props> = () => {
             type="range"
             min="0"
             max="100"
-            defaultValue={InputOutputRatio}
             id="InputOutputRatio"
             name="InputOutputRatio"
             value={InputOutputRatio}
@@ -107,7 +115,6 @@ const Settings: FC<Props> = () => {
             type="range"
             min={lowRange}
             max={highRange}
-            defaultValue={midRange}
             id="expectedTPM"
             name="expectedTPM"
             value={expectedTPM}
@@ -124,12 +131,19 @@ const Settings: FC<Props> = () => {
           name="monthlyMinutes"
           defaultValue={43800}
         />
+        <div className={styles.presets}>
+          <h2>Presets:</h2>
+          <button type="button" onClick={handleClickGPT48k}>
+            GPT-4 (8K)
+          </button>
+          <button type="button" onClick={handleClickGPT432k}>
+            GPT-4 (32K)
+          </button>
+        </div>
+        <div className={styles.visualize}>
+          <button type="submit">Visualize</button>
+        </div>
       </form>
-      <div className={styles.presets}>
-        <h2>Presets:</h2>
-        <button onClick={handleClickGPT48k}>GPT-4 (8K)</button>
-        <button onClick={handleClickGPT432k}>GPT-4 (32K)</button>
-      </div>
     </div>
   );
 };
