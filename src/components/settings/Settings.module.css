@@ -1,0 +1,27 @@
+.container {
+    padding: 1rem;
+    max-width: 20rem;
+   
+    form {
+        display: flex;
+        flex-direction: column;
+        
+        input {
+            margin-bottom: 1rem;
+            margin-right: 1rem;
+            width: 75%;
+        }
+
+    }
+
+    .presets {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap:1rem;
+
+        h2 {
+            width:100%;
+        }
+    }
+}
