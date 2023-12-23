@@ -1,11 +1,13 @@
 import { FC, ReactNode, useRef, useState, ChangeEvent, FormEvent } from "react";
 
 import { GPT4_32K, GPT4_8K } from "../../constants";
+import { datapoint } from "../../types";
 
 import styles from "./Settings.module.css";
 
 type Props = {
   children?: ReactNode;
+  setData: (data: datapoint[]) => void;
 };
 
 enum Models {
@@ -13,9 +15,13 @@ enum Models {
   gpt4_32k = "GPT4 (32K)",
 }
 
-const Settings: FC<Props> = () => {
+const Settings: FC<Props> = ({ setData }) => {
   const costInputRef = useRef<HTMLInputElement>(null);
   const costOutputRef = useRef<HTMLInputElement>(null);
+  const inputOutputRatioRef = useRef<HTMLInputElement>(null);
+  const expectedTPMRef = useRef<HTMLInputElement>(null);
+  const ptuCostRef = useRef<HTMLInputElement>(null);
+  const monthlyMinutesRef = useRef<HTMLInputElement>(null);
 
   const [currentModel, setCurrentModel] = useState<Models>(Models.gpt4_8k);
 
@@ -71,7 +77,37 @@ const Settings: FC<Props> = () => {
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(e.target);
+
+    const data = [];
+    for (let i = 0; i < 7; i++) {
+      const tokensPerMonth =
+        +monthlyMinutesRef.current!.value * i * +expectedTPMRef.current!.value;
+
+      const payGoInputCost =
+        (tokensPerMonth / 1000) *
+        (+inputOutputRatioRef.current!.value / 100) *
+        +costInputRef.current!.value;
+
+      const payGoOutputCost =
+        (tokensPerMonth / 1000) *
+        (1 - +inputOutputRatioRef.current!.value / 100) *
+        +costOutputRef.current!.value;
+
+      const payGoCost = payGoInputCost + payGoOutputCost;
+
+      data.push({
+        TPM: i * +expectedTPMRef.current!.value,
+        "PTU Cost": i * +ptuCostRef.current!.value * 100,
+        "PayGo Cost": payGoCost,
+      });
+      data.push({
+        TPM: i * +expectedTPMRef.current!.value + 1,
+        "PTU Cost": (i + 1) * +ptuCostRef.current!.value * 100,
+        "PayGo Cost": payGoCost,
+      });
+    }
+    setData(data);
+    console.log("DATA : ", data);
   };
 
   return (
@@ -106,6 +142,7 @@ const Settings: FC<Props> = () => {
             name="InputOutputRatio"
             value={InputOutputRatio}
             onChange={handleSlideInputOutputRatio}
+            ref={inputOutputRatioRef}
           />
           <span>{`${InputOutputRatio}%`}</span>
         </div>
@@ -119,17 +156,25 @@ const Settings: FC<Props> = () => {
             name="expectedTPM"
             value={expectedTPM}
             onChange={handleSlideTPM}
+            ref={expectedTPMRef}
           />
           <span>{expectedTPM}</span>
         </div>
         <label htmlFor="TPUCost">Cost in $ per TPU:</label>
-        <input type="text" id="TPUCost" name="TPUCost" defaultValue={312} />
+        <input
+          type="text"
+          id="TPUCost"
+          name="TPUCost"
+          defaultValue={312}
+          ref={ptuCostRef}
+        />
         <label htmlFor="monthlyMinutes">Minutes of usage per month:</label>
         <input
           type="text"
           id="monthlyMinutes"
           name="monthlyMinutes"
           defaultValue={43800}
+          ref={monthlyMinutesRef}
         />
         <div className={styles.presets}>
           <h2>Presets:</h2>
