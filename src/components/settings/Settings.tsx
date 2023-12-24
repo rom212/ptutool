@@ -186,7 +186,7 @@ const Settings: FC<Props> = ({ setData }) => {
           </button>
         </div>
         <div className={styles.visualize}>
-          <button type="submit">Visualize</button>
+          <button type="submit">Update Graph</button>
         </div>
       </form>
       <a
@@ -194,7 +194,7 @@ const Settings: FC<Props> = ({ setData }) => {
           "mailto:romanmullier@microsoft.com?subject=Feedback on the PTU/PAYGO price comparison tool"
         }
       >
-        Send Feedback
+        Send feedback email
       </a>
     </div>
   );
