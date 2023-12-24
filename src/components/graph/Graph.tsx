@@ -41,7 +41,7 @@ const Graph: FC<Props> = ({ data }) => {
         />
         <YAxis
           label={{
-            value: "Cost in $",
+            value: "Monthly cost in $",
             angle: -90,
             position: "insideLeft",
           }}

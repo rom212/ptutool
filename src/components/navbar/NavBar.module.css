@@ -1,9 +1,13 @@
 .container {    
     text-align: center;
-    border-bottom: 4px solid white;
+    border-bottom: 2px solid white;
+    text-align: center;
 
     h1 {
-        margin: 3rem;
-        text-align: center;
+        margin: 3rem 0 2rem;
+        background: -webkit-linear-gradient(#eee, #555);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 }
