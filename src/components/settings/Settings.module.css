@@ -28,6 +28,10 @@
         }
     }
 
+    button {
+        color: white;
+    }
+
     .visualize {
         box-sizing: border-box;
         button {
