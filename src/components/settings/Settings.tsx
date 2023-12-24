@@ -189,6 +189,13 @@ const Settings: FC<Props> = ({ setData }) => {
           <button type="submit">Visualize</button>
         </div>
       </form>
+      <a
+        href={
+          "mailto:romanmullier@microsoft.com?subject=Feedback on the PTU/PAYGO price comparison tool"
+        }
+      >
+        Send Feedback
+      </a>
     </div>
   );
 };
