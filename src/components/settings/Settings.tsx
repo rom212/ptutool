@@ -160,7 +160,7 @@ const Settings: FC<Props> = ({ setData }) => {
           />
           <span>{expectedTPM}</span>
         </div>
-        <label htmlFor="TPUCost">Cost in $ per TPU:</label>
+        <label htmlFor="TPUCost">Cost in $ per PTU:</label>
         <input
           type="text"
           id="TPUCost"
