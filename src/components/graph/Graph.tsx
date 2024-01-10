@@ -38,14 +38,17 @@ const Graph: FC<Props> = ({ data }) => {
           type="number"
           height={90}
           label={{ value: "Tokens per minute" }}
+          tickFormatter={(tick: string) => tick.toLocaleString()}
         />
         <YAxis
           label={{
             value: "Monthly cost in $",
             angle: -90,
-            position: "insideLeft",
+            position: "left",
           }}
           width={90}
+          tickFormatter={(tick: string) => tick.toLocaleString()}
+          unit={"$"}
         />
         <Tooltip />
         <Legend align="center" />

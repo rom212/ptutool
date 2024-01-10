@@ -107,7 +107,6 @@ const Settings: FC<Props> = ({ setData }) => {
       });
     }
     setData(data);
-    console.log("DATA : ", data);
   };
 
   return (
