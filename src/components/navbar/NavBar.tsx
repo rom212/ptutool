@@ -9,6 +9,16 @@ const NavBar: FC = () => {
       <p>
         This tool provides directional estimates only for comparison purposes
         between PTU Managed and PayGo Azure Open AI. This is not a quote.
+        <span>
+          {" "}
+          <a
+            href={
+              "mailto:romanmullier@microsoft.com?subject=Feedback on the PTU/PAYGO price comparison tool"
+            }
+          >
+            Send feedback email
+          </a>
+        </span>
       </p>
     </div>
   );

@@ -1,18 +1,45 @@
-export const GPT4_8K = {
-  costInput: "0.03",
-  costOutput: "0.06",
-  lowRange: "24000",
-  midRange: "48000",
-  highRange: "72000",
-};
-
-export const GPT4_32K = {
-  costInput: "0.06",
-  costOutput: "0.12",
-  lowRange: "36000",
-  midRange: "72000",
-  highRange: "108000",
-};
+export const MODELS = [
+  {
+    name: "GPT4_8K",
+    costInput: "0.03",
+    costOutput: "0.06",
+    lowRange: "24000",
+    midRange: "48000",
+    highRange: "72000",
+    increment: "100",
+    displayName: "GPT4 (8K)",
+  },
+  {
+    name: "GPT4_32K",
+    costInput: "0.06",
+    costOutput: "0.12",
+    lowRange: "36000",
+    midRange: "72000",
+    highRange: "108000",
+    increment: "200",
+    displayName: "GPT4 (32K)",
+  },
+  {
+    name: "GPT35_TURBO_4K",
+    costInput: "0.0015",
+    costOutput: "0.002",
+    lowRange: "75000",
+    midRange: "150000",
+    highRange: "225000",
+    increment: "25",
+    displayName: "GPT3.5 Turbo (4K)",
+  },
+  {
+    name: "GPT35_TURBO_16K",
+    costInput: "0.001",
+    costOutput: "0.002",
+    lowRange: "112000",
+    midRange: "221000",
+    highRange: "330000",
+    increment: "50",
+    displayName: "GPT3.5 Turbo (16K)",
+  },
+];
 
 export const DEFAULT_DATA = [
   {

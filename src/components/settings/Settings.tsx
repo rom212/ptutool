@@ -1,6 +1,14 @@
-import { FC, ReactNode, useRef, useState, ChangeEvent, FormEvent } from "react";
+import {
+  FC,
+  ReactNode,
+  useRef,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+} from "react";
 
-import { GPT4_32K, GPT4_8K } from "../../constants";
+import { MODELS } from "../../constants";
 import { datapoint } from "../../types";
 
 import styles from "./Settings.module.css";
@@ -11,8 +19,10 @@ type Props = {
 };
 
 enum Models {
-  gpt4_8k = "GPT4 (8K)",
-  gpt4_32k = "GPT4 (32K)",
+  GPT4_8K = "GPT4_8K",
+  GPT4_32K = "GPT4_32K",
+  GPT35_TURBO_4K = "GPT35_TURBO_4K",
+  GPT35_TURBO_16K = "GPT35_TURBO_16K",
 }
 
 const Settings: FC<Props> = ({ setData }) => {
@@ -22,64 +32,56 @@ const Settings: FC<Props> = ({ setData }) => {
   const expectedTPMRef = useRef<HTMLInputElement>(null);
   const ptuCostRef = useRef<HTMLInputElement>(null);
   const monthlyMinutesRef = useRef<HTMLInputElement>(null);
+  const scalingIncrementSizeRef = useRef<HTMLInputElement>(null);
 
-  const [currentModel, setCurrentModel] = useState<Models>(Models.gpt4_8k);
+  const [currentModel, setCurrentModel] = useState<Models>(Models.GPT4_8K);
 
   const [InputOutputRatio, setInputOutputRatio] = useState<string>("75");
 
-  let lowRange;
-  let highRange;
-  let midRange;
+  const modelData = MODELS.find((item) => item.name === currentModel);
 
-  if (currentModel === Models.gpt4_8k) {
-    lowRange = GPT4_8K.lowRange;
-    highRange = GPT4_8K.highRange;
-    midRange = GPT4_8K.midRange;
-  } else if (currentModel === Models.gpt4_32k) {
-    lowRange = GPT4_32K.lowRange;
-    highRange = GPT4_32K.highRange;
-    midRange = GPT4_32K.midRange;
-  }
+  const lowRange = modelData?.lowRange;
+  const midRange = modelData?.midRange;
+  const highRange = modelData?.highRange;
 
   const [expectedTPM, setExpectedTPM] = useState<string>(midRange as string);
 
-  const handleClickGPT48k = () => {
-    setCurrentModel(Models.gpt4_8k);
-    if (costInputRef.current) {
-      costInputRef.current.value = GPT4_8K.costInput;
-    }
-    if (costOutputRef.current) {
-      costOutputRef.current.value = GPT4_8K.costOutput;
-    }
-    setExpectedTPM(GPT4_8K.midRange);
+  const [monthlyMinutes, setMonthlyMinutes] = useState<string>("43800");
+
+  const handleModelChange = (newModel: Models) => {
+    setCurrentModel(newModel);
   };
 
-  const handleClickGPT432k = () => {
-    setCurrentModel(Models.gpt4_32k);
+  useEffect(() => {
     if (costInputRef.current) {
-      costInputRef.current.value = GPT4_32K.costInput;
+      costInputRef.current.value = modelData?.costInput as string;
     }
     if (costOutputRef.current) {
-      costOutputRef.current.value = GPT4_32K.costOutput;
+      costOutputRef.current.value = modelData?.costOutput as string;
     }
-    setExpectedTPM(GPT4_32K.midRange);
-  };
+    if (scalingIncrementSizeRef.current) {
+      scalingIncrementSizeRef.current.value = modelData?.increment as string;
+    }
+    setExpectedTPM(modelData?.midRange as string);
+  }, [modelData]);
 
   const handleSlideTPM = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setExpectedTPM(e.target.value);
   };
 
   const handleSlideInputOutputRatio = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setInputOutputRatio(e.target.value);
+  };
+
+  const handleSlideMinutes = (e: ChangeEvent<HTMLInputElement>) => {
+    setMonthlyMinutes(e.target.value);
   };
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const data = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       const tokensPerMonth =
         +monthlyMinutesRef.current!.value * i * +expectedTPMRef.current!.value;
 
@@ -97,12 +99,18 @@ const Settings: FC<Props> = ({ setData }) => {
 
       data.push({
         TPM: i * +expectedTPMRef.current!.value,
-        "PTU Cost": i * +ptuCostRef.current!.value * 100,
+        "PTU Cost":
+          i *
+          +ptuCostRef.current!.value *
+          +scalingIncrementSizeRef.current!.value,
         "PayGo Cost": payGoCost,
       });
       data.push({
         TPM: i * +expectedTPMRef.current!.value + 1,
-        "PTU Cost": (i + 1) * +ptuCostRef.current!.value * 100,
+        "PTU Cost":
+          (i + 1) *
+          +ptuCostRef.current!.value *
+          +scalingIncrementSizeRef.current!.value,
         "PayGo Cost": payGoCost,
       });
     }
@@ -111,7 +119,7 @@ const Settings: FC<Props> = ({ setData }) => {
 
   return (
     <div className={styles.container}>
-      <h2>{`Selected Model: ${currentModel}`}</h2>
+      <h2>{modelData?.displayName}</h2>
       <form onSubmit={handleFormSubmit}>
         <label htmlFor="costInput">Cost in $ for 1k input tokens:</label>
         <input
@@ -129,6 +137,25 @@ const Settings: FC<Props> = ({ setData }) => {
           defaultValue={0.06}
           ref={costOutputRef}
         />
+        <label htmlFor="TPUCost">Cost in $ per PTU:</label>
+        <input
+          type="text"
+          id="TPUCost"
+          name="TPUCost"
+          defaultValue={312}
+          ref={ptuCostRef}
+        />
+        <label htmlFor="scalingIncrementSize">
+          Scaling increment size in PTU:
+        </label>
+        <input
+          type="text"
+          id="scalingIncrementSize"
+          name="scalingIncrementSize"
+          defaultValue={100}
+          ref={scalingIncrementSizeRef}
+          disabled
+        />
         <label htmlFor="InputOutputRatio">
           Input token to output token ratio:
         </label>
@@ -145,7 +172,7 @@ const Settings: FC<Props> = ({ setData }) => {
           />
           <span>{`${InputOutputRatio}%`}</span>
         </div>
-        <label htmlFor="expectedTPM">Expected TPM for 100 PTU:</label>
+        <label htmlFor="expectedTPM">Expected TPM for the increment:</label>
         <div>
           <input
             type="range"
@@ -159,44 +186,52 @@ const Settings: FC<Props> = ({ setData }) => {
           />
           <span>{expectedTPM}</span>
         </div>
-        <label htmlFor="TPUCost">Cost in $ per PTU:</label>
-        <input
-          type="text"
-          id="TPUCost"
-          name="TPUCost"
-          defaultValue={312}
-          ref={ptuCostRef}
-        />
         <label htmlFor="monthlyMinutes">Minutes of usage per month:</label>
-        <input
-          type="text"
-          id="monthlyMinutes"
-          name="monthlyMinutes"
-          defaultValue={43800}
-          ref={monthlyMinutesRef}
-        />
-        <div className={styles.presets}>
-          <h2>Presets:</h2>
-          <button type="button" onClick={handleClickGPT48k}>
-            GPT-4 (8K)
-          </button>
-          <button type="button" onClick={handleClickGPT432k}>
-            GPT-4 (32K)
-          </button>
+        <div>
+          <input
+            type="range"
+            min={0}
+            max={43800}
+            id="monthlyMinutes"
+            name="monthlyMinutes"
+            value={monthlyMinutes}
+            onChange={handleSlideMinutes}
+            ref={monthlyMinutesRef}
+          />
+          <span>{monthlyMinutes}</span>
         </div>
         <div className={styles.visualize}>
           <button type="submit">Update Graph</button>
         </div>
+        <div className={styles.presets}>
+          <h2>Presets:</h2>
+          <button
+            type="button"
+            onClick={() => handleModelChange(Models.GPT4_8K)}
+          >
+            GPT-4 (8K)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModelChange(Models.GPT4_32K)}
+          >
+            GPT-4 (32K)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModelChange(Models.GPT35_TURBO_4K)}
+          >
+            GPT-3.5 Turbo (4K)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModelChange(Models.GPT35_TURBO_16K)}
+          >
+            GPT-3.5 Turbo (16K)
+          </button>
+        </div>
       </form>
-      <a
-        href={
-          "mailto:romanmullier@microsoft.com?subject=Feedback on the PTU/PAYGO price comparison tool"
-        }
-      >
-        Send feedback email
-      </a>
     </div>
   );
 };
-
 export default Settings;
