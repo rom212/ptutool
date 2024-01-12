@@ -205,30 +205,16 @@ const Settings: FC<Props> = ({ setData }) => {
         </div>
         <div className={styles.presets}>
           <h2>Presets:</h2>
-          <button
-            type="button"
-            onClick={() => handleModelChange(Models.GPT4_8K)}
-          >
-            GPT-4 (8K)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModelChange(Models.GPT4_32K)}
-          >
-            GPT-4 (32K)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModelChange(Models.GPT35_TURBO_4K)}
-          >
-            GPT-3.5 Turbo (4K)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModelChange(Models.GPT35_TURBO_16K)}
-          >
-            GPT-3.5 Turbo (16K)
-          </button>
+          {MODELS.map((model) => {
+            return (
+              <button
+                type="button"
+                onClick={() => handleModelChange(model.name as Models)}
+              >
+                {model.displayName}
+              </button>
+            );
+          })}
         </div>
       </form>
     </div>
