@@ -20,6 +20,16 @@ export const MODELS = [
     displayName: "GPT4 (32K)",
   },
   {
+    name: "GPT4_TURBO_80K",
+    costInput: "0.01",
+    costOutput: "0.03",
+    lowRange: "112000",
+    midRange: "256000",
+    highRange: "400000",
+    increment: "100",
+    displayName: "GPT4 Turbo (80K)",
+  },
+  {
     name: "GPT35_TURBO_4K",
     costInput: "0.0015",
     costOutput: "0.002",
