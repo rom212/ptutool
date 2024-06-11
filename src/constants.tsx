@@ -31,13 +31,23 @@ export const MODELS = [
   },
   {
     name: "GPT35_TURBO_16K",
-    costInput: "0.001",
-    costOutput: "0.002",
+    costInput: "0.0005",
+    costOutput: "0.0015",
     lowRange: "112000",
     midRange: "221000",
     highRange: "330000",
     increment: "50",
     displayName: "GPT3.5 Turbo (16K)",
+  },
+  {
+    name: "GPT4_o",
+    costInput: "0.005",
+    costOutput: "0.015",
+    lowRange: "112000",
+    midRange: "256000",
+    highRange: "400000",
+    increment: "50",
+    displayName: "GPT4 o",
   },
 ];
 
